@@ -216,7 +216,7 @@ local function createPanel()
                         surface.DrawTexturedRect(0, 0, w, h)
                     end
                     if s:IsHovered() then
-                        draw.RoundedBox(0, 0, 0, w, h, ColorAlpha(UNITY.Config.Colors.Accent, 10))
+                        draw.RoundedBox(0, 0, 0, w, h, ColorAlpha(s.team_color, 10))
                     end
                 end
 
