@@ -264,11 +264,19 @@ local function createPanel()
                     menu:AddSpacer()
 
                     menu:AddOption("Go To", function()
-                        RunConsoleCommand("sam", "goto", v:SteamID() or v:Nick() or "UNKNOWN_PLAYER")
+                        if SAM then
+                            RunConsoleCommand("sam", "goto", v:SteamID() or v:Nick() or "UNKNOWN_PLAYER")
+                        else
+                            RunConsoleCommand("ulx", "goto", v:SteamID() or v:Nick() or "UNKNOWN_PLAYER")
+                        end
                     end):SetIcon("icon16/arrow_out.png")
 
                     menu:AddOption("Bring", function()
-                        RunConsoleCommand("sam", "bring", v:SteamID() or v:Nick() or "UNKNOWN_PLAYER")
+                        if SAM then
+                            RunConsoleCommand("sam", "bring", v:SteamID() or v:Nick() or "UNKNOWN_PLAYER")
+                        else
+                            RunConsoleCommand("ulx", "bring", v:SteamID() or v:Nick() or "UNKNOWN_PLAYER")
+                        end
                     end):SetIcon("icon16/arrow_in.png")
 
                     menu:AddSpacer()
