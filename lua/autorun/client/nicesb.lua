@@ -264,7 +264,7 @@ local function createPanel()
                     menu:AddSpacer()
 
                     menu:AddOption("Go To", function()
-                        if SAM then
+                        if sam then
                             RunConsoleCommand("sam", "goto", v:SteamID() or v:Nick() or "UNKNOWN_PLAYER")
                         else
                             RunConsoleCommand("ulx", "goto", v:SteamID() or v:Nick() or "UNKNOWN_PLAYER")
@@ -272,7 +272,7 @@ local function createPanel()
                     end):SetIcon("icon16/arrow_out.png")
 
                     menu:AddOption("Bring", function()
-                        if SAM then
+                        if sam then
                             RunConsoleCommand("sam", "bring", v:SteamID() or v:Nick() or "UNKNOWN_PLAYER")
                         else
                             RunConsoleCommand("ulx", "bring", v:SteamID() or v:Nick() or "UNKNOWN_PLAYER")
