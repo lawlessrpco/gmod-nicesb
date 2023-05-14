@@ -3,16 +3,20 @@
 
 -- Config
 local config = {
+    -- HTML Content for the title
     Title = [[<!doctypehtml><html lang=en><meta charset=UTF-8><meta content="IE=edge"http-equiv=X-UA-Compatible><meta content="width=device-width,initial-scale=1"name=viewport><style>@import url(https://fonts.googleapis.com/css2?family=Montserrat:wght@900&display=swap);*{margin:0;padding:0}body{background:url(https://static.lawlessrp.co/sleek/backgrounds/images/steve.jpg) no-repeat center center fixed;background-size:cover;font-family:Montserrat,sans-serif;backdrop-filter:blur(5px)}.inner{width:100vw;height:100vh;background:rgba(255,75,75,.25)}.inner .title{color:#fff;position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);font-size:5vw}</style><div class=inner><h3 class=title>LawlessRP.co</h3></div>]],
-    Ranks = {
+    Ranks = { -- Falls back to defaults if rank isnt provided
         ["superadmin"] = {"Super Administrator", Color(255, 0, 0), Material("icon16/application_xp_terminal.png")},
         ["admin"] = {"Administrator", Color(100, 37, 37), Material("icon16/star.png")},
         ["jradmin"] = {"Jr Administrator", Color(0, 255, 157), Material("icon16/star.png")},
         ["user"] = {"User", Color(0, 255, 157), Material("icon16/user.png")}
     },
+    BottomBranding = "donate.lawlessrp.co",
+    Margin = 5,
+    Font = "Arial"
 }
 
--- Some Utils
+-- Some Utils (paralax f4)
 local blur = Material("pp/blurscreen")
 local panel = FindMetaTable("Panel")
 
@@ -107,9 +111,35 @@ local function getUsergroupCount(g)
     return cnt
 end
 
+if IsValid(nsb.Frame) then
+    nsb.Frame:Remove() -- fast reload fixer
+end
+
+-- Easy font system
+-- from unity, lawlessrp custom lib
+nsb.FontCache = nsb.FontCache or {}
+
+function nsb.Font(size)
+    -- Cache
+    if nsb.FontCache[size] then
+        return nsb.FontCache[size]
+    end
+
+    -- Make the new font
+    surface.CreateFont("NSB/" .. size, {
+        font = config.Font,
+        size = size,
+        weight = 500,
+    })
+
+    nsb.FontCache[size] = "NSB/" .. size
+
+    return nsb.FontCache[size]
+end
+
 -- Create the f4 menu panel
 local function createPanel()
-    local rankFont = UNITY.Font(ScreenScale(8))
+    local rankFont = nsb.Font(ScreenScale(8))
 
     nsb.Frame = vgui.Create("DFrame")
     nsb.Frame:SetSize(ScrW() * .85, ScrH() * .85)
@@ -140,21 +170,21 @@ local function createPanel()
             nsb.ContentPanel:Remove()
         end
         nsb.ContentPanel = nsb.Frame:Add("Panel")
-        nsb.ContentPanel:SetSize(nsb.Frame:GetWide() - UNITY.Config.Margin * 2, nsb.Frame:GetTall() - UNITY.Config.Margin * 2)
+        nsb.ContentPanel:SetSize(nsb.Frame:GetWide() - config.Margin * 2, nsb.Frame:GetTall() - config.Margin * 2)
         nsb.ContentPanel:Center()
 
         local warn = nsb.ContentPanel:Add("DLabel")
         warn:Dock(BOTTOM)
         warn:SetContentAlignment(5)
         warn:SetColor(Color(78, 78, 78, 37))
-        warn:SetText("donate.lawlessrp.co")
+        warn:SetText(config.BottomBranding)
         warn:SizeToContentsX(10)
         warn:SetFont("NSB:Warn")
 
         local titleHTML = nsb.ContentPanel:Add("DHTML")
         titleHTML:Dock(TOP)
         titleHTML:SetHTML(config.Title)
-        titleHTML:DockMargin(0, 0, 0, UNITY.Config.Margin)
+        titleHTML:DockMargin(0, 0, 0, config.Margin)
         titleHTML:SetTall(nsb.Frame:GetTall() * .15)
         titleHTML:SetMouseInputEnabled(false)
 
@@ -166,7 +196,7 @@ local function createPanel()
             local teamContent = peoplePanel:Add("DPanel")
             teamContent:Dock(TOP)
             teamContent:InvalidateParent(true)
-            teamContent:DockMargin(0, 0, 0, UNITY.Config.Margin)
+            teamContent:DockMargin(0, 0, 0, config.Margin)
             teamContent.color_r = team.GetColor(teamId).r
             teamContent.color_g = team.GetColor(teamId).g
             teamContent.color_b = team.GetColor(teamId).b
@@ -193,8 +223,8 @@ local function createPanel()
             end
             teamTitlePanel.Paint = function(s, w, h)
                 draw.RoundedBox(0, 0, 0, w, h, s.color)
-                draw.SimpleText(s.label, UNITY.Font(ScreenScale(10)), UNITY.Config.Margin, h / 2, color_white, TEXT_ALIGN_LEFT, TEXT_ALIGN_CENTER)
-                draw.SimpleText(s.count_label, UNITY.Font(ScreenScale(8)), w - UNITY.Config.Margin, h / 2, color_white, TEXT_ALIGN_RIGHT, TEXT_ALIGN_CENTER)
+                draw.SimpleText(s.label, nsb.Font(ScreenScale(10)), config.Margin, h / 2, color_white, TEXT_ALIGN_LEFT, TEXT_ALIGN_CENTER)
+                draw.SimpleText(s.count_label, nsb.Font(ScreenScale(8)), w - config.Margin, h / 2, color_white, TEXT_ALIGN_RIGHT, TEXT_ALIGN_CENTER)
             end
 
             for k, v in pairs(playerList) do
@@ -272,14 +302,14 @@ local function createPanel()
                         money_color = Color(75, 255, 75, 100)
                     end
 
-                    draw.SimpleText(DarkRP.formatMoney(their_money), UNITY.Font(ScreenScale(7)), w / 2, h / 2, money_color, TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
+                    draw.SimpleText(DarkRP.formatMoney(their_money), nsb.Font(ScreenScale(7)), w / 2, h / 2, money_color, TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
                 end
 
                 local ico = cont:Add("DPanel")
                 ico:Dock(LEFT)
                 ico:InvalidateParent(true)
                 ico:SetWide(iconSize + 2)
-                ico:DockMargin(UNITY.Config.Margin, 0, 0, 0)
+                ico:DockMargin(config.Margin, 0, 0, 0)
                 ico.Paint = function(s, w, h)
                     if !IsValid(v) then return end
                     surface.SetMaterial(rankConfig[3])
@@ -294,11 +324,11 @@ local function createPanel()
                 rank:SetText(rankConfig[1])
                 rank:SetColor(rankConfig[2])
                 rank:SizeToContentsX()
-                rank:DockMargin(UNITY.Config.Margin, 0, UNITY.Config.Margin, 0)
+                rank:DockMargin(config.Margin, 0, config.Margin, 0)
 
                 local username = cont:Add("DLabel")
                 username:Dock(LEFT)
-                username:SetFont(UNITY.Font(ScreenScale(10)))
+                username:SetFont(nsb.Font(ScreenScale(10)))
                 username:SetText(v:Nick())
                 username:SetContentAlignment(4)
                 username:SizeToContentsX()
@@ -306,11 +336,11 @@ local function createPanel()
                 local infoPanel = cont:Add("DLabel")
                 infoPanel:Dock(RIGHT)
                 infoPanel:SetColor(color_white)
-                infoPanel:SetFont(UNITY.Font(ScreenScale(7)))
+                infoPanel:SetFont(nsb.Font(ScreenScale(7)))
                 infoPanel:SetText(string.format("%dms", v:Ping()))
                 infoPanel:SizeToContentsX()
                 infoPanel:SetContentAlignment(6)
-                infoPanel:DockMargin(0, 0, UNITY.Config.Margin, 0)
+                infoPanel:DockMargin(0, 0, config.Margin, 0)
             end
 
             teamContent:SetTall(30 + (40 * table.Count(playerList)))
