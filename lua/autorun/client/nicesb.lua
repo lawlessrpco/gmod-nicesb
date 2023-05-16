@@ -368,7 +368,10 @@ function nsb.Toggle(tgl)
         end
     else
         if nsb.Frame then
-            nsb.Frame:AlphaTo(0, 0.25, 0, nil)
+            nsb.Frame:AlphaTo(0, 0.25, 0, function()
+                nsb.Frame:Remove()
+                nsb.Frame = nil
+            end)w
         end
     end
 end
