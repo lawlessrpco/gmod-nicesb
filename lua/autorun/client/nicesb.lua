@@ -371,7 +371,7 @@ function nsb.Toggle(tgl)
             nsb.Frame:AlphaTo(0, 0.25, 0, function()
                 nsb.Frame:Remove()
                 nsb.Frame = nil
-            end)w
+            end)
         end
     end
 end
